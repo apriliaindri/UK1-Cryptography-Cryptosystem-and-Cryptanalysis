@@ -8,14 +8,22 @@ $cipher = $_POST['cipher'] ?? '';
 $key = $_POST['key'] ?? '';
 $result = '';
 
+// teks input
 $message = strtoupper($_POST['ciphertext'] ?? '');
 $message = preg_replace("/[^A-Z]/","",$message);
+
+// siapkan folder uploads
+$uploadDir = __DIR__ . '/uploads/';
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0777, true);
+}
 
 if(empty($message) && empty($_FILES['cipherfile']['tmp_name'])){
     echo "Ciphertext kosong!";
     exit;
 }
 
+// kalau teks biasa
 if(!empty($message)){
     switch($cipher){
         case 'shift': $result = shift_decrypt($message,intval($key)); break;
@@ -32,12 +40,29 @@ if(!empty($message)){
     }
     echo "<b>Hasil Dekripsi:</b><br>".chunk_split($result,5,' ');
 }
+// kalau file diupload
 elseif(!empty($_FILES['cipherfile']['tmp_name'])){
-    $data=file_get_contents($_FILES['cipherfile']['tmp_name']);
-    if($cipher=='shift') $plain_bytes = shift_decrypt_file($data,intval($key));
-    else { echo "Hanya Shift Cipher untuk file binary"; exit; }
-    $saveFile='uploads/decrypted_file';
-    file_put_contents($saveFile,$plain_bytes);
+    $raw = file_get_contents($_FILES['cipherfile']['tmp_name']);
+    $payload = @unserialize($raw);
+
+    if(!is_array($payload) || !isset($payload['ext']) || !isset($payload['data'])){
+        echo "Metadata ekstensi tidak ditemukan atau file rusak!";
+        exit;
+    }
+
+    $cipher_bytes = base64_decode($payload['data']);
+
+    if($cipher=='shift') {
+        $plain_bytes = shift_decrypt_file($cipher_bytes, intval($key));
+    } else { 
+        echo "Hanya Shift Cipher untuk file binary"; 
+        exit; 
+    }
+
+    // simpan kembali dengan ekstensi asli
+    $saveFile = $uploadDir . 'decrypted_file.' . $payload['ext'];
+    file_put_contents($saveFile, $plain_bytes);
+
     echo "File berhasil didekripsi: <b>$saveFile</b>";
 }
 ?>
