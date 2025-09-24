@@ -47,7 +47,7 @@ Aplikasi ini memiliki dua fungsi utama.
 1. Pilih salah satu algoritma cipher dari menu dropdown.
 2. Ketik pesan (*plaintext*) Anda di dalam kotak teks atau unggah sebuah file.
 3. Masukkan Kunci yang sesuai dengan petunjuk yang diberikan.
-4. Klik tombol **Enkripsi"**.
+4. Klik tombol **"Enkripsi"**.
 5. Hasil enkripsi (*ciphertext*) akan muncul di kotak output di bawahnya.
 
 **Dekripsi**
