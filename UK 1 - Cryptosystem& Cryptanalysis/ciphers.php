@@ -80,25 +80,35 @@ function affine_decrypt($text, $a, $b) {
 
 // ===================== VIGENERE CIPHER =====================
 function vigenere_encrypt($text, $key) {
-    $text = strtoupper($text);
-    $key = strtoupper(preg_replace("/[^A-Z]/","",$key));
+    $text = strtoupper(preg_replace("/[^A-Z]/","",$text));
+    $key  = strtoupper(preg_replace("/[^A-Z]/","",$key));
     $result = '';
     $keyLen = strlen($key);
+
+    if ($keyLen === 0) {
+        return "Error: Kunci Vigenere tidak boleh kosong atau non-huruf.";
+    }
+
     for ($i=0; $i<strlen($text); $i++) {
         $shift = ord($key[$i % $keyLen]) - 65;
-        $result .= chr((ord($text[$i])-65 + $shift) % 26 + 65);
+        $result .= chr((ord($text[$i]) - 65 + $shift) % 26 + 65);
     }
     return $result;
 }
 
 function vigenere_decrypt($text, $key) {
-    $text = strtoupper($text);
-    $key = strtoupper(preg_replace("/[^A-Z]/","",$key));
+    $text = strtoupper(preg_replace("/[^A-Z]/","",$text));
+    $key  = strtoupper(preg_replace("/[^A-Z]/","",$key));
     $result = '';
     $keyLen = strlen($key);
+
+    if ($keyLen === 0) {
+        return "Error: Kunci Vigenere tidak boleh kosong atau non-huruf.";
+    }
+
     for ($i=0; $i<strlen($text); $i++) {
         $shift = ord($key[$i % $keyLen]) - 65;
-        $result .= chr((ord($text[$i])-65 - $shift + 26) % 26 + 65);
+        $result .= chr((ord($text[$i]) - 65 - $shift + 26) % 26 + 65);
     }
     return $result;
 }
