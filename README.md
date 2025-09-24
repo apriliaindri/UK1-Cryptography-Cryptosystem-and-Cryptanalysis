@@ -20,7 +20,7 @@ Sebelum menjalankan program ini, pastikan Anda memiliki lingkungan server web lo
 
 ## Cara Menjalankan Program
 
-1. Clone atau Unduk Repositori
+1. Clone atau Unduh Repositori
 Clone repositori dengan perintah berikut
 
 ```
