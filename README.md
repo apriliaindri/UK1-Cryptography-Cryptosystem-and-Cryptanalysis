@@ -23,7 +23,9 @@ Sebelum menjalankan program ini, pastikan Anda memiliki lingkungan server web lo
 1. Clone atau Unduk Repositori
 Clone repositori dengan perintah berikut
 
-` git clone https://github.com/nama-anda/nama-repositori.git `
+```
+ git clone https://github.com/nama-anda/nama-repositori.git
+```
 
 2. Pindahkan Folder Proyek 
 Pindahkan seluruh folder proyek ini ke dalam direktori htdocs di dalam folder instalasi XAMPP Anda.
@@ -33,7 +35,9 @@ Buka **XAMPP Control Panel** dan klik tombol **"Start"** pada modul **Apache**.
 
 4. Buka di Browser
 Buka browser web Anda (Chrome, Firefox, dll.) dan akses aplikasi melalui alamat berikut. Ganti nama-folder-proyek dengan nama file index.
-` http://localhost/UK1-Cryptography-Cryptosystem-and-Cryptanalysis/UK%201%20-%20Cryptosystem&%20Cryptanalysis/index.php `
+```
+http://localhost/UK1-Cryptography-Cryptosystem-and-Cryptanalysis/UK%201%20-%20Cryptosystem&%20Cryptanalysis/index.php
+```
 
 # Cara Menggunakan
 
