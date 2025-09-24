@@ -30,7 +30,7 @@ label {
 
 select, input[type="text"], textarea, input[type="file"] {
     width: 100%;
-    padding: 10px 12px;
+    padding: 8px 12px;
     margin-top: 6px;
     border-radius: 8px;
     border: 1px solid #3a4b63;
@@ -38,6 +38,8 @@ select, input[type="text"], textarea, input[type="file"] {
     color: #eaf6ff;
     font-size: 15px;
     transition: all 0.3s ease;
+    height: 40px;        /* tinggi seragam */
+    box-sizing: border-box;
 }
 
 select:focus, input[type="text"]:focus, textarea:focus, input[type="file"]:focus {
@@ -48,8 +50,9 @@ select:focus, input[type="text"]:focus, textarea:focus, input[type="file"]:focus
 }
 
 textarea {
-    min-height: 100px;
-    resize: vertical;
+    min-height: 80px;
+    resize: none;
+    height: auto;   /* biar beda dengan input */
 }
 
 button {
