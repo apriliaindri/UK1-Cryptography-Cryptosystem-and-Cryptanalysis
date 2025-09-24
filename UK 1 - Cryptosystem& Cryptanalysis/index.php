@@ -28,7 +28,16 @@
       <input type="file" name="file">
 
       <label>Kunci:</label>
-      <input type="text" name="key" placeholder="Shift: angka, Substitution/Permutation: 26 huruf, Vigenere: teks, Hill: angka koma misal 3,3,2,5">
+      <small>
+  <ul>
+    <li>Shift: masukkan angka, misal <b>3</b></li>
+    <li>Substitution: masukkan 26 huruf unik</li>
+    <li>Vigenere: masukkan teks, misal <b>KUNCI</b></li>
+    <li>Hill: matriks dalam format angka koma, misal <b>3,3,2,5</b></li>
+    <li>Permutation: masukkan 26 huruf untuk susunan abjad</li>
+  </ul>
+</small>
+      <input type="text" name="key">
 
       <button type="submit">Enkripsi</button>
   </form>
@@ -36,14 +45,7 @@
 
   <h2>Dekripsi</h2>
   <form id="decryptForm" enctype="multipart/form-data">
-      <label>Unggah File Cipher atau Masukkan Ciphertext:</label>
-      <input type="file" name="cipherfile">
-      <textarea name="ciphertext" rows="5"></textarea>
-
-      <label>Kunci:</label>
-      <input type="text" name="key">
-
-      <label>Pilih Cipher:</label>
+    <label>Pilih Cipher:</label>
       <select name="cipher">
           <option value="shift">Shift Cipher</option>
           <option value="substitution">Substitution Cipher</option>
@@ -52,6 +54,25 @@
           <option value="hill">Hill Cipher</option>
           <option value="permutation">Permutation Cipher</option>
       </select>
+
+     <label>Pesan (Text):</label>
+      <textarea name="ciphertext" rows="5"></textarea>
+
+
+      <label>Atau Unggah File:</label>
+      <input type="file" name="cipherfile">
+
+      <label>Kunci:</label>
+      <small>
+        <ul>
+    <li>Shift: masukkan angka, misal <b>3</b></li>
+    <li>Substitution: masukkan 26 huruf unik</li>
+    <li>Vigenere: masukkan teks, misal <b>KUNCI</b></li>
+    <li>Hill: matriks dalam format angka koma, misal <b>3,3,2,5</b></li>
+    <li>Permutation: masukkan 26 huruf untuk susunan abjad</li>
+  </ul>
+</small>
+      <input type="text" name="key">
 
       <button type="submit">Dekripsi</button>
   </form>
