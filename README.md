@@ -18,7 +18,7 @@ Proyek ini adalah implementasi dari beberapa metode kriptografi dasar dalam form
 
 Sebelum menjalankan program ini, pastikan Anda memiliki lingkungan server web lokal yang sudah terpasang dan berjalan, karena aplikasi ini menggunakan PHP untuk proses *backend*.
 
-# Cara Mnejalankan Program
+## Cara Menjalankan Program
 
 1. Clone atau Unduk Repositori
 Clone repositori dengan perintah berikut
@@ -39,7 +39,7 @@ Buka browser web Anda (Chrome, Firefox, dll.) dan akses aplikasi melalui alamat 
 http://localhost/UK1-Cryptography-Cryptosystem-and-Cryptanalysis/UK%201%20-%20Cryptosystem&%20Cryptanalysis/index.php
 ```
 
-# Cara Menggunakan
+## Cara Menggunakan
 
 Aplikasi ini memiliki dua fungsi utama.
 
