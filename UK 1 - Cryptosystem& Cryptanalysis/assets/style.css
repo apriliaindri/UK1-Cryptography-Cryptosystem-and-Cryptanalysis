@@ -1,47 +1,99 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
     background-color: #0f172a;
     color: #e6eef8;
-    padding: 20px;
+    margin: 16px;
+}
+
+.card {
+    background: #0b1220;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+    max-width: 900px;
+    margin: 0 auto;
 }
 
 h1, h2 {
+    color: #bfe3ff;
     text-align: center;
-    color: #fcd34d;
+    margin-bottom: 12px;
 }
 
-form {
-    background-color: #1e293b;
-    padding: 20px;
-    border-radius: 12px;
-    margin: 20px auto;
-    width: 90%;
-    max-width: 600px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+label {
+    display: block;
+    margin-top: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #cfe9ff;
 }
 
-input, textarea, select, button {
+/* Input box, select, textarea, file input */
+select, input[type="text"], textarea, input[type="file"] {
     width: 100%;
-    padding: 10px;
-    margin: 8px 0;
+    padding: 10px 12px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #3a4b63;
+    background: #0b1a33;
+    color: #eaf6ff;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+/* Efek saat fokus */
+select:focus, input[type="text"]:focus, textarea:focus, input[type="file"]:focus {
+    outline: none;
+    border-color: #1d6cff;
+    box-shadow: 0 0 6px rgba(29, 108, 255, 0.7);
+    background: #0d2347;
+}
+
+/* Textarea lebih nyaman */
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Tombol tetap sama */
+button {
+    margin-top: 12px;
+    padding: 10px 14px;
     border-radius: 8px;
     border: none;
-}
-
-button {
-    background-color: #3b82f6;
+    background: #1d6cff;
     color: white;
-    font-size: 16px;
     cursor: pointer;
+    font-size: 15px;
 }
 
 button:hover {
-    background-color: #2563eb;
+    background: #1250c2;
 }
 
-pre {
-    background-color: #334155;
-    padding: 10px;
+.output {
+    white-space: pre-wrap;
+    background: #021226;
+    padding: 12px;
     border-radius: 8px;
-    overflow-x: auto;
+    margin-top: 8px;
+    color: #dff2ff;
+    min-height: 80px;
+    overflow: auto;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
 }
+
+small ul {
+    margin: 6px 0 0 18px;
+    padding: 0;
+    font-size: 13px;
+    color: #a8c9ff;
+}
+
+small li {
+    margin-bottom: 4px;
+}
+
