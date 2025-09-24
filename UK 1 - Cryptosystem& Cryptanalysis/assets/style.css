@@ -28,7 +28,6 @@ label {
     color: #cfe9ff;
 }
 
-/* Input box, select, textarea, file input */
 select, input[type="text"], textarea, input[type="file"] {
     width: 100%;
     padding: 10px 12px;
@@ -41,7 +40,6 @@ select, input[type="text"], textarea, input[type="file"] {
     transition: all 0.3s ease;
 }
 
-/* Efek saat fokus */
 select:focus, input[type="text"]:focus, textarea:focus, input[type="file"]:focus {
     outline: none;
     border-color: #1d6cff;
@@ -49,13 +47,11 @@ select:focus, input[type="text"]:focus, textarea:focus, input[type="file"]:focus
     background: #0d2347;
 }
 
-/* Textarea lebih nyaman */
 textarea {
     min-height: 100px;
     resize: vertical;
 }
 
-/* Tombol tetap sama */
 button {
     margin-top: 12px;
     padding: 10px 14px;
