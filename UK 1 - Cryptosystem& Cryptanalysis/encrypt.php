@@ -8,14 +8,22 @@ $cipher = $_POST['cipher'] ?? '';
 $key = $_POST['key'] ?? '';
 $result = '';
 
+// teks input
 $message = strtoupper($_POST['message'] ?? '');
 $message = preg_replace("/[^A-Z]/","",$message);
+
+// siapkan folder uploads
+$uploadDir = __DIR__ . '/uploads/';
+if (!is_dir($uploadDir)) {
+    mkdir($uploadDir, 0777, true);
+}
 
 if(empty($message) && empty($_FILES['file']['tmp_name'])){
     echo "Pesan kosong atau tidak ada huruf A-Z!";
     exit;
 }
 
+// kalau teks biasa
 if(!empty($message)){
     switch($cipher){
         case 'shift': $result = shift_encrypt($message,intval($key)); break;
@@ -27,7 +35,8 @@ if(!empty($message)){
             $result = affine_encrypt($message,intval($parts[0]),intval($parts[1])); break;
         case 'vigenere': $result = vigenere_encrypt($message,$key); break;
         case 'hill':
-            $matrix=explode(',',$key); $n=sqrt(count($matrix)); if($n!=intval($n)){ echo "Kunci Hill harus kuadrat sempurna"; exit;}
+            $matrix=explode(',',$key); $n=sqrt(count($matrix)); 
+            if($n!=intval($n)){ echo "Kunci Hill harus kuadrat sempurna"; exit;}
             $keyMatrix=array_chunk($matrix,$n);
             $result = hill_encrypt($message,$keyMatrix); break;
         case 'permutation':
@@ -37,12 +46,26 @@ if(!empty($message)){
     }
     echo "<b>Hasil Enkripsi:</b><br>".chunk_split($result,5,' ');
 }
+// kalau file diupload
 elseif(!empty($_FILES['file']['tmp_name'])){
     $data = file_get_contents($_FILES['file']['tmp_name']);
-    if($cipher=='shift') $cipher_bytes = shift_encrypt_file($data,intval($key));
-    else { echo "Hanya Shift Cipher untuk file binary"; exit; }
-    $saveFile='uploads/encrypted.dat';
-    file_put_contents($saveFile,$cipher_bytes);
-    echo "File berhasil dienkripsi: <b>$saveFile</b>";
+    $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION); // ambil ekstensi
+
+    if($cipher=='shift') {
+        $cipher_bytes = shift_encrypt_file($data, intval($key));
+    } else { 
+        echo "Hanya Shift Cipher untuk file binary"; 
+        exit; 
+    }
+
+    // buat payload dengan metadata
+    $payload = [
+        'ext' => $ext,
+        'data' => base64_encode($cipher_bytes)
+    ];
+    $saveFile = $uploadDir . 'encrypted.dat';
+    file_put_contents($saveFile, serialize($payload));
+
+    echo "File berhasil dienkripsi: <b>$saveFile</b> (ekstensi asli .$ext)";
 }
 ?>
