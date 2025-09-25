@@ -44,6 +44,7 @@
             <ul>
               <li>Shift: masukkan angka, misal <b>3</b></li>
               <li>Substitution: masukkan 26 huruf unik</li>
+              <li>Affine: masukkan 2 angka a,b dipisah koma, misal <b>5,8</b></li>
               <li>Vigenere: masukkan teks, misal <b>KUNCI</b></li>
               <li>Hill: matriks dalam format angka koma, misal <b>3,3,2,5</b></li>
               <li>Permutation: masukkan 26 huruf untuk susunan abjad</li>
@@ -80,6 +81,7 @@
             <ul>
               <li>Shift: masukkan angka, misal <b>3</b></li>
               <li>Substitution: masukkan 26 huruf unik</li>
+              <li>Affine: masukkan 2 angka a,b dipisah koma, misal <b>5,8</b></li>
               <li>Vigenere: masukkan teks, misal <b>KUNCI</b></li>
               <li>Hill: matriks dalam format angka koma, misal <b>3,3,2,5</b></li>
               <li>Permutation: masukkan 26 huruf untuk susunan abjad</li>
