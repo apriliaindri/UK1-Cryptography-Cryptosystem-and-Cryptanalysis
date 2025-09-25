@@ -91,35 +91,50 @@ function substitution_decrypt($text, $key) {
 }
 
 function substitution_encrypt_file($data, $key) {
-    if(strlen($key) != 26) return false;
-    $key = strtoupper($key);
-    $key_chars = str_split($key);
-    if (count(array_unique($key_chars)) != 26) return false;
-    
+    $lookup = create_byte_permutation_table($key);
+    if ($lookup === false) return false;
+
     $cipher_bytes = '';
     for($i = 0; $i < strlen($data); $i++){
         $byte = ord($data[$i]);
-        // Gunakan key untuk transformasi byte
-        $new_byte = ($byte + ord($key_chars[$byte % 26])) % 256;
-        $cipher_bytes .= chr($new_byte);
+        $cipher_bytes .= chr($lookup[$byte]);
     }
     return $cipher_bytes;
 }
 
 function substitution_decrypt_file($data, $key) {
-    if(strlen($key) != 26) return false;
-    $key = strtoupper($key);
-    $key_chars = str_split($key);
-    if (count(array_unique($key_chars)) != 26) return false;
+    $lookup = create_byte_permutation_table($key);
+    if ($lookup === false) return false;
+    
+    $reverse_lookup = array_flip($lookup);
     
     $plain_bytes = '';
     for($i = 0; $i < strlen($data); $i++){
         $byte = ord($data[$i]);
-        // Reverse transformasi
-        $original_byte = ($byte - ord($key_chars[$byte % 26]) + 256) % 256;
-        $plain_bytes .= chr($original_byte);
+        $plain_bytes .= chr($reverse_lookup[$byte]);
     }
     return $plain_bytes;
+}
+
+function create_byte_permutation_table($key) {
+    if (strlen($key) != 26) return false;
+    $key = strtoupper($key);
+    $key_chars = str_split($key);
+    if (count(array_unique($key_chars)) != 26) return false;
+
+    $bytes = range(0, 255);
+    
+    mt_srand(crc32($key)); 
+    
+    // Algoritma shuffle (Fisher-Yates)
+    for ($i = count($bytes) - 1; $i > 0; $i--) {
+        $j = mt_rand(0, $i);
+        $tmp = $bytes[$i];
+        $bytes[$i] = $bytes[$j];
+        $bytes[$j] = $tmp;
+    }
+    
+    return array_combine(range(0, 255), $bytes);
 }
 
 // ===================== AFFINE CIPHER =====================
@@ -430,102 +445,172 @@ function matrix_inverse_mod_256($matrix, $m) {
     return matrix_inverse_mod($matrix, $m);
 }
 
+
 // ===================== PERMUTATION CIPHER =====================
-function permutation_encrypt($text, $key){
-    $text = strtoupper($text);
-    
-    if (strlen($key) != 26) {
-        return "Error: Kunci permutation harus 26 huruf!";
-    }
-    
+
+function get_transposition_key_order($key) {
     $key = strtoupper($key);
     $key_chars = str_split($key);
-    if (count(array_unique($key_chars)) != 26) {
-        return "Error: Kunci permutation harus berisi 26 huruf yang berbeda!";
-    }
+    $sorted_key_chars = $key_chars;
+    sort($sorted_key_chars);
     
-    $alphabet = range('A','Z');
-    $map = array_combine($alphabet, $key_chars);
-    $result = '';
+    $order = [];
+    $used_indices = [];
     
-    for($i=0;$i<strlen($text);$i++) {
-        $char = $text[$i];
-        if (ctype_alpha($char)) {
-            $result .= $map[$char];
+    foreach ($sorted_key_chars as $char) {
+        for ($i = 0; $i < count($key_chars); $i++) {
+            if ($key_chars[$i] == $char && !in_array($i, $used_indices)) {
+                $order[] = $i;
+                $used_indices[] = $i;
+                break;
+            }
         }
     }
+    
+    $read_order = array_fill(0, count($order), 0);
+    foreach ($order as $i => $index) {
+        $read_order[$index] = $i;
+    }
+    
+    return $read_order;
+}
+
+
+function permutation_encrypt($text, $key) {
+    $key = strtoupper(preg_replace("/[^A-Z]/", "", $key));
+    $text = strtoupper(preg_replace("/[^A-Z]/", "", $text));
+    
+    if (strlen($key) == 0) return "Error: Kunci tidak boleh kosong!";
+    
+    $key_order = get_transposition_key_order($key);
+    $num_cols = strlen($key);
+    
+    $text_len = strlen($text);
+    if ($text_len % $num_cols != 0) {
+        $text .= str_repeat('X', $num_cols - ($text_len % $num_cols));
+    }
+    
+    $columns = array_fill(0, $num_cols, '');
+    for ($i = 0; $i < strlen($text); $i++) {
+        $columns[$i % $num_cols] .= $text[$i];
+    }
+    
+    $result = '';
+    $sorted_order = $key_order;
+    sort($sorted_order);
+    
+    foreach ($sorted_order as $order_val) {
+        $col_index = array_search($order_val, $key_order);
+        $result .= $columns[$col_index];
+    }
+    
     return $result;
 }
 
-function permutation_decrypt($text,$key){
-    if (strlen($key) != 26) {
-        return "Error: Kunci permutation harus 26 huruf!";
+
+function permutation_decrypt($ciphertext, $key) {
+    $key = strtoupper(preg_replace("/[^A-Z]/", "", $key));
+    $ciphertext = strtoupper(preg_replace("/[^A-Z]/", "", $ciphertext));
+    
+    if (strlen($key) == 0) return "Error: Kunci tidak boleh kosong!";
+    
+    $key_order = get_transposition_key_order($key);
+    $num_cols = strlen($key);
+    $cipher_len = strlen($ciphertext);
+    $num_rows = ceil($cipher_len / $num_cols);
+    
+    $columns = array_fill(0, $num_cols, '');
+    $cipher_pointer = 0;
+    
+    $sorted_order = $key_order;
+    sort($sorted_order);
+
+    foreach ($sorted_order as $order_val) {
+        $col_index = array_search($order_val, $key_order);
+        $columns[$col_index] = substr($ciphertext, $cipher_pointer, $num_rows);
+        $cipher_pointer += $num_rows;
     }
     
-    $key = strtoupper($key);
-    $key_chars = str_split($key);
-    if (count(array_unique($key_chars)) != 26) {
-        return "Error: Kunci permutation harus berisi 26 huruf yang berbeda!";
-    }
-    
-    $alphabet = range('A','Z');
-    $map = array_combine($key_chars, $alphabet);
     $result = '';
-    
-    for($i=0;$i<strlen($text);$i++) {
-        $char = $text[$i];
-        if (ctype_alpha($char)) {
-            $result .= $map[$char];
+    for ($i = 0; $i < $num_rows; $i++) {
+        for ($j = 0; $j < $num_cols; $j++) {
+            if (isset($columns[$j][$i])) {
+                $result .= $columns[$j][$i];
+            }
         }
     }
-    return $result;
+    
+    return rtrim($result, 'X');
 }
 
 function permutation_encrypt_file($data, $key) {
-    if(strlen($key) != 26) return false;
-    $key = strtoupper($key);
-    $key_chars = str_split($key);
-    if (count(array_unique($key_chars)) != 26) return false;
+    $key = strtoupper(preg_replace("/[^A-Z]/", "", $key));
+    if (strlen($key) == 0) return false;
     
-    // Buat lookup table dari 0-255
-    $lookup = array();
-    for($i = 0; $i < 256; $i++) {
-        $lookup[$i] = ($i + ord($key_chars[$i % 26]) - 65) % 256;
+    $key_order = get_transposition_key_order($key);
+    $num_cols = strlen($key);
+    
+    // Padding: Tambahkan null byte '\0' jika perlu (standar untuk file biner)
+    $data_len = strlen($data);
+    if ($data_len % $num_cols != 0) {
+        $data .= str_repeat("\0", $num_cols - ($data_len % $num_cols));
     }
     
-    $cipher_bytes = '';
-    for($i = 0; $i < strlen($data); $i++){
-        $byte = ord($data[$i]);
-        $cipher_bytes .= chr($lookup[$byte]);
+    $columns = array_fill(0, $num_cols, '');
+    for ($i = 0; $i < strlen($data); $i++) {
+        $columns[$i % $num_cols] .= $data[$i];
     }
-    return $cipher_bytes;
+    
+    $result = '';
+    $sorted_order = $key_order;
+    sort($sorted_order);
+    
+    foreach ($sorted_order as $order_val) {
+        $col_index = array_search($order_val, $key_order);
+        $result .= $columns[$col_index];
+    }
+    
+    return $result;
 }
 
 function permutation_decrypt_file($data, $key) {
-    if(strlen($key) != 26) return false;
-    $key = strtoupper($key);
-    $key_chars = str_split($key);
-    if (count(array_unique($key_chars)) != 26) return false;
+    $key = strtoupper(preg_replace("/[^A-Z]/", "", $key));
+    if (strlen($key) == 0) return false;
     
-    // Buat lookup table
-    $lookup = array();
-    $reverse = array();
-    for($i = 0; $i < 256; $i++) {
-        $lookup[$i] = ($i + ord($key_chars[$i % 26]) - 65) % 256;
+    $key_order = get_transposition_key_order($key);
+    $num_cols = strlen($key);
+    $data_len = strlen($data);
+    
+    if ($data_len % $num_cols != 0) {
+        return "Error: Data terenkripsi tidak valid untuk kunci ini.";
     }
     
-    // Buat reverse mapping
-    for($i = 0; $i < 256; $i++) {
-        $reverse[$lookup[$i]] = $i;
+    $num_rows = $data_len / $num_cols;
+    
+    $columns = array_fill(0, $num_cols, '');
+    $data_pointer = 0;
+    
+    $sorted_order = $key_order;
+    sort($sorted_order);
+
+    foreach ($sorted_order as $order_val) {
+        $col_index = array_search($order_val, $key_order);
+        $columns[$col_index] = substr($data, $data_pointer, $num_rows);
+        $data_pointer += $num_rows;
     }
     
-    $plain_bytes = '';
-    for($i = 0; $i < strlen($data); $i++){
-        $byte = ord($data[$i]);
-        $plain_bytes .= chr($reverse[$byte]);
+    $result = '';
+    for ($i = 0; $i < $num_rows; $i++) {
+        for ($j = 0; $j < $num_cols; $j++) {
+            if (isset($columns[$j][$i])) {
+                $result .= $columns[$j][$i];
+            }
+        }
     }
-    return $plain_bytes;
+    
+    return rtrim($result, "\0");
 }
+
 
 // ===================== HELPER FUNCTIONS =====================
 function mod_inverse($a,$m){
