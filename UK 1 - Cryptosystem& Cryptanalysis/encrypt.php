@@ -44,7 +44,16 @@ if(!empty($message)){
             $result = permutation_encrypt($message,$key); break;
         default: $result="Cipher tidak dikenal!";
     }
-    echo "<b>Hasil Enkripsi:</b><br>".chunk_split($result,5,' ');
+    
+    $output_format = $_POST['output_format'] ?? 'grouped';
+
+    echo "<b>Hasil Enkripsi:</b><br>";
+
+    if ($output_format === 'no_space') {
+        echo htmlspecialchars($result);
+    } else {
+        echo htmlspecialchars(chunk_split($result, 5, ' '));
+    }
 }
 // kalau file diupload
 elseif(!empty($_FILES['file']['tmp_name'])){

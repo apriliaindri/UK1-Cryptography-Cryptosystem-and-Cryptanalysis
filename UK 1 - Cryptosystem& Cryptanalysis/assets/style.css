@@ -1,98 +1,124 @@
 body {
-    font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
-    background-color: #0f172a;
-    color: #e6eef8;
-    margin: 16px;
+  font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  background-color: #0f172a;
+  color: #e6eef8;
+  margin: 16px;
+}
+
+.page-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card-container {
+  display: flex;
+  justify-content: center;
+  gap: 24px; 
+  flex-wrap: wrap; 
 }
 
 .card {
-    background: #0b1220;
-    padding: 18px;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
-    max-width: 900px;
-    margin: 0 auto;
+  background: #0b1220;
+  padding: 18px 24px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+  flex: 1; 
+  min-width: 450px; 
+  max-width: 500px; 
+  border: 1px solid #3a4b63;
+  
+  display: flex;
+  flex-direction: column;
 }
 
+form {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; 
+}
+
+
 h1, h2 {
-    color: #bfe3ff;
-    text-align: center;
-    margin-bottom: 12px;
+  color: #bfe3ff;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 label {
-    display: block;
-    margin-top: 14px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #cfe9ff;
+  display: block;
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #cfe9ff;
 }
 
 select, input[type="text"], textarea, input[type="file"] {
-    width: 100%;
-    padding: 8px 12px;
-    margin-top: 6px;
-    border-radius: 8px;
-    border: 1px solid #3a4b63;
-    background: #0b1a33;
-    color: #eaf6ff;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    height: 40px;        /* tinggi seragam */
-    box-sizing: border-box;
+  width: 100%;
+  padding: 8px 12px;
+  margin-top: 6px;
+  border-radius: 8px;
+  border: 1px solid #3a4b63;
+  background: #0b1a33;
+  color: #eaf6ff;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  height: 40px;
+  box-sizing: border-box;
 }
 
 select:focus, input[type="text"]:focus, textarea:focus, input[type="file"]:focus {
-    outline: none;
-    border-color: #1d6cff;
-    box-shadow: 0 0 6px rgba(29, 108, 255, 0.7);
-    background: #0d2347;
+  outline: none;
+  border-color: #1d6cff;
+  box-shadow: 0 0 6px rgba(29, 108, 255, 0.7);
+  background: #0d2347;
 }
 
 textarea {
-    min-height: 80px;
-    resize: none;
-    height: auto;   /* biar beda dengan input */
+  min-height: 80px;
+  resize: none;
+  height: auto;  
 }
 
 button {
-    margin-top: 12px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: none;
-    background: #1d6cff;
-    color: white;
-    cursor: pointer;
-    font-size: 15px;
+  width: 100%;
+  margin-top: auto; 
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #1d6cff;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 button:hover {
-    background: #1250c2;
+  background: #1250c2;
 }
 
 .output {
-    white-space: pre-wrap;
-    background: #021226;
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 8px;
-    color: #dff2ff;
-    min-height: 80px;
-    overflow: auto;
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    -ms-border-radius: 8px;
-    -o-border-radius: 8px;
+  white-space: pre-wrap;
+  word-wrap: break-word; 
+  background: #021226;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 16px;
+  color: #dff2ff;
+  min-height: 80px;
+  overflow: auto;
 }
 
 small ul {
-    margin: 6px 0 0 18px;
-    padding: 0;
-    font-size: 13px;
-    color: #a8c9ff;
+  margin: 6px 0 0 18px;
+  padding: 0;
+  font-size: 13px;
+  color: #a8c9ff;
 }
 
 small li {
-    margin-bottom: 4px;
+  margin-bottom: 4px;
 }
 
+input[name="key"] {
+  margin-bottom: 20px; 
+}
