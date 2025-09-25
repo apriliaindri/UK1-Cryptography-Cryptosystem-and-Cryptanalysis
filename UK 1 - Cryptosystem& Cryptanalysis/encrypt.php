@@ -59,22 +59,54 @@ if(!empty($message)){
 elseif(!empty($_FILES['file']['tmp_name'])){
     $data = file_get_contents($_FILES['file']['tmp_name']);
     $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION); // ambil ekstensi
+    $cipher_bytes = '';
 
-    if($cipher=='shift') {
-        $cipher_bytes = shift_encrypt_file($data, intval($key));
-    } else { 
-        echo "Hanya Shift Cipher untuk file binary"; 
-        exit; 
+    switch($cipher) {
+        case 'shift':
+            $cipher_bytes = shift_encrypt_file($data, intval($key));
+            break;
+        case 'substitution':
+            if(strlen($key)!=26) { echo "Kunci Substitution harus 26 huruf unik!"; exit;}
+            $cipher_bytes = substitution_encrypt_file($data, $key);
+            if($cipher_bytes === false) { echo "Error dalam enkripsi Substitution file!"; exit; }
+            break;
+        case 'affine':
+            $parts = explode(',',$key); 
+            if(count($parts)!=2){ echo "Kunci Affine harus 2 angka a,b"; exit;}
+            $cipher_bytes = affine_encrypt_file($data, intval($parts[0]), intval($parts[1]));
+            if($cipher_bytes === false) { echo "Error dalam enkripsi Affine file!"; exit; }
+            break;
+        case 'vigenere':
+            $cipher_bytes = vigenere_encrypt_file($data, $key);
+            if($cipher_bytes === false) { echo "Kunci Vigenere tidak valid untuk file!"; exit; }
+            break;
+        case 'hill':
+            $matrix = explode(',',$key); 
+            $n = sqrt(count($matrix)); 
+            if($n != intval($n)){ echo "Kunci Hill harus kuadrat sempurna"; exit;}
+            $keyMatrix = array_chunk($matrix, $n);
+            $cipher_bytes = hill_encrypt_file($data, $keyMatrix);
+            if($cipher_bytes === false) { echo "Error dalam enkripsi Hill file!"; exit; }
+            break;
+        case 'permutation':
+            if(strlen($key)!=26){ echo "Kunci Permutation harus 26 huruf!"; exit;}
+            $cipher_bytes = permutation_encrypt_file($data, $key);
+            if($cipher_bytes === false) { echo "Error dalam enkripsi Permutation file!"; exit; }
+            break;
+        default: 
+            echo "Cipher tidak dikenal atau tidak didukung untuk file!"; 
+            exit;
     }
 
     // buat payload dengan metadata
     $payload = [
+        'cipher' => $cipher,
         'ext' => $ext,
         'data' => base64_encode($cipher_bytes)
     ];
-    $saveFile = $uploadDir . 'encrypted.dat';
+    $saveFile = $uploadDir . 'encrypted_' . $cipher . '.dat';
     file_put_contents($saveFile, serialize($payload));
 
-    echo "File berhasil dienkripsi: <b>$saveFile</b> (ekstensi asli .$ext)";
+    echo "File berhasil dienkripsi dengan <b>$cipher cipher</b>: <b>$saveFile</b> (ekstensi asli .$ext)";
 }
 ?>

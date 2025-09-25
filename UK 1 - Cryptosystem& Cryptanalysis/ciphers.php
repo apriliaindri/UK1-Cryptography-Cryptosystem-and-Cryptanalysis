@@ -57,6 +57,36 @@ function substitution_decrypt($text, $key) {
     return $result;
 }
 
+function substitution_encrypt_file($data, $key) {
+    if(strlen($key) != 26) return false;
+    $key = strtoupper($key);
+    $alphabet = range('A','Z');
+    $keyArray = str_split($key);
+    
+    $cipher_bytes = '';
+    for($i = 0; $i < strlen($data); $i++){
+        $byte = ord($data[$i]);
+        $cipher_bytes .= chr($keyArray[$byte % 26] ? ord($keyArray[$byte % 26]) : $byte);
+    }
+    return $cipher_bytes;
+}
+
+function substitution_decrypt_file($data, $key) {
+    if(strlen($key) != 26) return false;
+    $key = strtoupper($key);
+    $alphabet = range('A','Z');
+    $keyArray = str_split($key);
+    $reverseMap = array_flip($keyArray);
+    
+    $plain_bytes = '';
+    for($i = 0; $i < strlen($data); $i++){
+        $char = chr(ord($data[$i]));
+        $original = isset($reverseMap[$char]) ? $alphabet[array_search($char, $keyArray)] : $char;
+        $plain_bytes .= chr(ord($original));
+    }
+    return $plain_bytes;
+}
+
 // ===================== AFFINE CIPHER =====================
 function affine_encrypt($text, $a, $b) {
     $text = strtoupper($text);
@@ -76,6 +106,27 @@ function affine_decrypt($text, $a, $b) {
         $result .= chr((($a_inv*(ord($text[$i])-65-$b+26))%26)+65);
     }
     return $result;
+}
+
+function affine_encrypt_file($data, $a, $b) {
+    $cipher_bytes = '';
+    for($i = 0; $i < strlen($data); $i++){
+        $byte = ord($data[$i]);
+        $cipher_bytes .= chr(($a * $byte + $b) % 256);
+    }
+    return $cipher_bytes;
+}
+
+function affine_decrypt_file($data, $a, $b) {
+    $a_inv = mod_inverse($a, 256);
+    if($a_inv === false) return false;
+    
+    $plain_bytes = '';
+    for($i = 0; $i < strlen($data); $i++){
+        $byte = ord($data[$i]);
+        $plain_bytes .= chr(($a_inv * ($byte - $b + 256)) % 256);
+    }
+    return $plain_bytes;
 }
 
 // ===================== VIGENERE CIPHER =====================
@@ -111,6 +162,34 @@ function vigenere_decrypt($text, $key) {
         $result .= chr((ord($text[$i]) - 65 - $shift + 26) % 26 + 65);
     }
     return $result;
+}
+
+function vigenere_encrypt_file($data, $key) {
+    $key = strtoupper(preg_replace("/[^A-Z]/", "", $key));
+    if(strlen($key) === 0) return false;
+    
+    $cipher_bytes = '';
+    $keyLen = strlen($key);
+    
+    for($i = 0; $i < strlen($data); $i++){
+        $shift = ord($key[$i % $keyLen]) - 65;
+        $cipher_bytes .= chr((ord($data[$i]) + $shift) % 256);
+    }
+    return $cipher_bytes;
+}
+
+function vigenere_decrypt_file($data, $key) {
+    $key = strtoupper(preg_replace("/[^A-Z]/", "", $key));
+    if(strlen($key) === 0) return false;
+    
+    $plain_bytes = '';
+    $keyLen = strlen($key);
+    
+    for($i = 0; $i < strlen($data); $i++){
+        $shift = ord($key[$i % $keyLen]) - 65;
+        $plain_bytes .= chr((ord($data[$i]) - $shift + 256) % 256);
+    }
+    return $plain_bytes;
 }
 
 // ===================== HILL CIPHER =====================
@@ -157,6 +236,52 @@ function hill_decrypt($text, $keyMatrix) {
         return "Error: Matriks kunci tidak dapat di-invers. Dekripsi tidak mungkin dilakukan.";
     }
     return hill_transform($text, $invMatrix);
+}
+
+function hill_transform_file($data, $matrix) {
+    $result = '';
+    $n = count($matrix);
+    $data_len = strlen($data);
+    
+    // Pad data jika perlu
+    while($data_len % $n != 0) {
+        $data .= "\0";
+        $data_len++;
+    }
+
+    for ($i = 0; $i < $data_len; $i += $n) {
+        $block = substr($data, $i, $n);
+        $vector = [];
+        for ($j = 0; $j < $n; $j++) {
+            $vector[$j] = ord($block[$j]);
+        }
+
+        $result_vector = array_fill(0, $n, 0);
+
+        for ($row = 0; $row < $n; $row++) {
+            for ($col = 0; $col < $n; $col++) {
+                $result_vector[$row] += $matrix[$row][$col] * $vector[$col];
+            }
+            $result_vector[$row] %= 256;
+        }
+
+        for ($j = 0; $j < $n; $j++) {
+            $result .= chr($result_vector[$j]);
+        }
+    }
+    return $result;
+}
+
+function hill_encrypt_file($data, $keyMatrix) {
+    return hill_transform_file($data, $keyMatrix);
+}
+
+function hill_decrypt_file($data, $keyMatrix) {
+    $invMatrix = matrix_inverse_mod_256($keyMatrix, 256);
+    if ($invMatrix === false) {
+        return false;
+    }
+    return hill_transform_file($data, $invMatrix);
 }
 
 function matrix_inverse_mod($matrix, $m) {
@@ -211,6 +336,11 @@ function matrix_inverse_mod($matrix, $m) {
     return $inv;
 }
 
+function matrix_inverse_mod_256($matrix, $m) {
+    // Sama dengan matrix_inverse_mod tapi untuk modulo 256
+    return matrix_inverse_mod($matrix, $m);
+}
+
 // ===================== PERMUTATION CIPHER =====================
 function permutation_encrypt($text, $key){
     $text = strtoupper($text);
@@ -227,6 +357,48 @@ function permutation_decrypt($text,$key){
     $result = '';
     for($i=0;$i<strlen($text);$i++) $result .= $map[$text[$i]];
     return $result;
+}
+
+function permutation_encrypt_file($data, $key) {
+    if(strlen($key) != 26) return false;
+    $key = strtoupper($key);
+    
+    // Buat lookup table dari 0-255
+    $lookup = array();
+    for($i = 0; $i < 256; $i++) {
+        $lookup[$i] = ($i + ord($key[$i % 26])) % 256;
+    }
+    
+    $cipher_bytes = '';
+    for($i = 0; $i < strlen($data); $i++){
+        $byte = ord($data[$i]);
+        $cipher_bytes .= chr($lookup[$byte]);
+    }
+    return $cipher_bytes;
+}
+
+function permutation_decrypt_file($data, $key) {
+    if(strlen($key) != 26) return false;
+    $key = strtoupper($key);
+    
+    // Buat reverse lookup table
+    $lookup = array();
+    $reverse = array();
+    for($i = 0; $i < 256; $i++) {
+        $lookup[$i] = ($i + ord($key[$i % 26])) % 256;
+    }
+    
+    // Buat reverse mapping
+    for($i = 0; $i < 256; $i++) {
+        $reverse[$lookup[$i]] = $i;
+    }
+    
+    $plain_bytes = '';
+    for($i = 0; $i < strlen($data); $i++){
+        $byte = ord($data[$i]);
+        $plain_bytes .= chr($reverse[$byte]);
+    }
+    return $plain_bytes;
 }
 
 // ===================== MOD INVERSE =====================
