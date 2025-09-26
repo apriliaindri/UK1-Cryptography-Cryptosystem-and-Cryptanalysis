@@ -23,7 +23,7 @@ if (empty($message) && empty($_FILES['file']['tmp_name'])) {
     exit;
 }
 
-// kalau teks biasa
+// teks biasa
 if (!empty($message)) {
     switch ($cipher) {
         case 'shift':
@@ -134,7 +134,7 @@ if (!empty($message)) {
 
     echo "</div></div>";
 }
-// kalau file diupload
+// jika file diupload
 elseif (!empty($_FILES['file']['tmp_name'])) {
     // Validasi kunci untuk setiap cipher
     switch ($cipher) {
@@ -295,3 +295,4 @@ elseif (!empty($_FILES['file']['tmp_name'])) {
     echo "<h3>File Berhasil Dienkripsi!</h3>";
     echo "<p><strong>File Hasil:</strong> <code>$saveFile</code></p>";
 }
+
