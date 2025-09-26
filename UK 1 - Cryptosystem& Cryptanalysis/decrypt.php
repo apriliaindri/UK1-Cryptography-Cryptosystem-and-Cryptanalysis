@@ -23,7 +23,7 @@ if (empty($message) && empty($_FILES['cipherfile']['tmp_name'])) {
     exit;
 }
 
-// kalau teks biasa
+// jika teks biasa
 if (!empty($message)) {
     switch ($cipher) {
         case 'shift':
@@ -123,7 +123,7 @@ if (!empty($message)) {
     echo "<p><strong>Plaintext:</strong><br>" . htmlspecialchars(chunk_split($result, 5, ' ')) . "</p>";
     echo "</div></div>";
 }
-// kalau file diupload
+// jika file diupload
 elseif (!empty($_FILES['cipherfile']['tmp_name'])) {
     $raw = file_get_contents($_FILES['cipherfile']['tmp_name']);
     $payload = @unserialize($raw);
@@ -287,3 +287,4 @@ elseif (!empty($_FILES['cipherfile']['tmp_name'])) {
     echo "<h3>File Berhasil Didekripsi!</h3>";
     echo "<p><strong>File Hasil:</strong> <code>$saveFile</code></p>";
 }
+
